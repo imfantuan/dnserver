@@ -129,9 +129,7 @@ class Resolver(ProxyResolver):
         for record in self.records:
             if record.match(request.q):
                 reply.add_answer(record.rr)
-            elif record.r_match(request.q):
                 
-        
         if reply.rr:
             logger.info('found zone for %s[%s], %d replies', request.q.qname, type_name, len(reply.rr))
             return reply
