@@ -67,6 +67,15 @@ class Record:
         )
 
     def match(self, q):
+        if q.qtype == QTYPE.ANY or q.qtype == self._rtype:
+            if q.qname == self._rname:
+                return True
+            elif regex.match(r'^'+self._rname.replace('.', '\.').replace('*\.', '[^\.]+\.')+'$', q.qname):
+                return True
+            else:
+                return False
+#         return q.qname == self._rname and (q.qtype == QTYPE.ANY or q.qtype == self._rtype)
+    def r_match(self, q):
         return q.qname == self._rname and (q.qtype == QTYPE.ANY or q.qtype == self._rtype)
 
     def sub_match(self, q):
@@ -120,7 +129,9 @@ class Resolver(ProxyResolver):
         for record in self.records:
             if record.match(request.q):
                 reply.add_answer(record.rr)
-
+            elif record.r_match(request.q):
+                
+        
         if reply.rr:
             logger.info('found zone for %s[%s], %d replies', request.q.qname, type_name, len(reply.rr))
             return reply
